@@ -45,6 +45,8 @@ class DocumentManager:
         # Clear out the database first.
         if os.path.exists(self.CHROMA_PATH):
             shutil.rmtree(self.CHROMA_PATH)
+            
+        print("Starting embedding process...")
         Chroma.from_documents(
             documents = chunks,
             collection_name = "the_documents",
