@@ -1,13 +1,13 @@
 import os
 from typing import List
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import START, MessagesState, StateGraph, MessagesPlaceholder
+from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
-from .state import AgentState
-from .create_database import DocumentManager
+from state import AgentState
+from create_database import DocumentManager
 
 # Load environment variables
 load_dotenv()
@@ -94,22 +94,3 @@ Context:
         response = self.app.invoke(initial_state, config=config)
         return response["messages"][-1].content
 
-if __name__ == "__main__":
-    # response = llm.invoke("How many r's are in the word 'strawberry'?")
-    # print(response.content)
-    agent = Agent()
-    while True:
-        try:
-            user_input = input("You: ").strip()
-            
-            if user_input.lower() in ['quit', 'exit', 'q']:
-                print("Goodbye!")
-                break
-
-            print("\nAgent: ", end="", flush=True)
-            response = agent.run_agent(user_input)
-            print(response)
-
-        except Exception as e:
-            print(f"Error: {e}")
-            continue
