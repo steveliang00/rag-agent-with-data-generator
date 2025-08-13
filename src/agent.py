@@ -6,8 +6,8 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
-from .state import AgentState
-from .create_database import DocumentManager
+from state import AgentState
+from create_database import DocumentManager
 
 # Load environment variables
 load_dotenv()
@@ -77,9 +77,41 @@ Context:
     def _retrieve_docs(self, user_input: str):
         """Retrieve documents from the vector store"""
         doc_manager = DocumentManager()
+        
+        # Check if chroma folder exists and has content
+        if not self._is_chroma_populated(doc_manager):
+            print("Vector store is empty. Loading and processing documents...")
+            # Load documents from data folder
+            docs = doc_manager.load_docs()
+            # Split documents into chunks
+            chunks = doc_manager.split_text(docs)
+            # Embed and store the chunks
+            doc_manager.embed_and_store_docs(chunks)
+            print("Documents processed and stored successfully!")
+        
+        # Load the vector store and perform similarity search
         db = doc_manager.load_vector_store()
         results = db.similarity_search(user_input, k=3)
         return results
+    
+    def _is_chroma_populated(self, doc_manager: DocumentManager) -> bool:
+        """Check if the chroma vector store exists and has content"""
+        # Check if chroma directory exists
+        if not os.path.exists(doc_manager.CHROMA_PATH):
+            return False
+        
+        # Check if directory has any files (not just empty folder)
+        if not any(os.listdir(doc_manager.CHROMA_PATH)):
+            return False
+            
+        try:
+            # Try to load the vector store and check if it has documents
+            db = doc_manager.load_vector_store()
+            count = db._collection.count()
+            return count > 0
+        except Exception:
+            # If we can't load it, treat it as empty
+            return False
 
 
     def run_agent(self, user_input: str, thread_id: str = "default"):
