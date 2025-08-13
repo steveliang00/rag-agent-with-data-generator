@@ -4,8 +4,13 @@ Main entry point for the Grammar Guide Bot
 """
 
 import os
+import warnings
 # Disable tokenizers parallelism to prevent warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+# Suppress PyPDF warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="pypdf")
+warnings.filterwarnings("ignore", message=".*wrong pointing object.*")
 
 if __name__ == "__main__":
     from agent import Agent

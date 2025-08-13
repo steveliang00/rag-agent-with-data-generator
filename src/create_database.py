@@ -1,6 +1,12 @@
 import os
 import shutil
+import warnings
 from typing import List, Optional
+
+# Suppress PyPDF warnings for cleaner output
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="pypdf")
+warnings.filterwarnings("ignore", message=".*wrong pointing object.*")
+warnings.filterwarnings("ignore", message=".*CryptographyDeprecationWarning.*")
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
