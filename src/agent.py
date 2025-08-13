@@ -53,12 +53,13 @@ class Agent:
         prompt = ChatPromptTemplate.from_messages([
             ("system", 
 """
-You are a helpful assistant specialized in answering questions based on the given context.
-Use the following context to provide accurate and helpful answers. 
+You are a helpful assistant specialized in answering questions based on the retrieved document text.
+Use the following document text to provide accurate and helpful answers. 
 If the context doesn't contain relevant information, politely say you don't have enough information to answer the question.
+If user message is not related to the document text, respond normally to the best of your ability.
 
-Context:
-{context}
+Document Text:
+{document_text}
 """
             ),
             MessagesPlaceholder(variable_name="messages")
@@ -68,7 +69,7 @@ Context:
         
         # Invoke the LLM with the formatted prompt
         response = chain.invoke({
-            "context": context,
+            "document_text": context,
             "messages": messages
         })
         return {"messages": [response]}
