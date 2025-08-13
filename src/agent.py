@@ -55,7 +55,7 @@ class Agent:
 """
 You are a helpful assistant specialized in answering questions based on the retrieved document text.
 Use the following document text to provide accurate and helpful answers. 
-If the context doesn't contain relevant information, politely say you don't have enough information to answer the question.
+If the document text doesn't contain relevant information, politely say you don't have enough information to answer the question.
 If user message is not related to the document text, respond normally to the best of your ability.
 
 Document Text:
