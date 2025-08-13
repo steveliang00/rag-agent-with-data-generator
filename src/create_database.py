@@ -1,6 +1,9 @@
 import os
 import shutil
 import warnings
+import sys
+from io import StringIO
+from contextlib import redirect_stdout, redirect_stderr
 from typing import List, Optional
 
 # Suppress PyPDF warnings for cleaner output
@@ -32,7 +35,10 @@ class DocumentManager:
             path = self.DATA_PATH,
             glob = "*.pdf"
         )
-        docs = loader.load()
+        
+        # Suppress all output during PDF loading
+        with redirect_stdout(StringIO()), redirect_stderr(StringIO()):
+            docs = loader.load()
         return docs
 
     def split_text(self, docs: List[Document]) -> List[Document]:
@@ -79,8 +85,9 @@ class DocumentManager:
 if __name__ == "__main__":
     document_manager = DocumentManager()
     docs = document_manager.load_docs()
-    chunks = document_manager.split_text(docs)
-    document_manager.embed_and_store_docs(chunks)
-    db = document_manager.load_vector_store()
-    print(db._collection.count())
+    # chunks = document_manager.split_text(docs)
+    # document_manager.embed_and_store_docs(chunks)
+    # db = document_manager.load_vector_store()
+    # print(db._collection.count())
+    print(len(docs))
 
