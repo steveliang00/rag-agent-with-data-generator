@@ -3,6 +3,10 @@
 Main entry point for the Grammar Guide Bot
 """
 
+import os
+# Disable tokenizers parallelism to prevent warnings
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 if __name__ == "__main__":
     from agent import Agent
     
