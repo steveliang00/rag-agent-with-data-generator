@@ -3,6 +3,7 @@ import json
 import pickle
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
+from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from create_database import DocumentManager
@@ -39,10 +40,19 @@ def initialize_generator(config_name: str = DEFAULT_CONFIG):
     config = DATASET_CONFIGS[config_name]
     
     # Initialize LLM with config settings
-    model_name = os.getenv("OPENROUTER_MODEL", config["model"])
-    llm = ChatOpenAI(
-        api_key=openrouter_api_key,
-        base_url=base_url,
+    # model_name = os.getenv("OPENROUTER_MODEL","openai/gpt-oss-20b:free")
+    # llm = ChatOpenAI(
+    #     api_key=openrouter_api_key,
+    #     base_url=base_url,
+    #     model=model_name,
+    #     temperature=config["temperature"],
+    #     timeout=30
+    # )
+
+    # MistralAI option
+    model_name = os.getenv("MISTRAL_MODEL", "mistral-small-latest")
+    llm = ChatMistralAI(
+        api_key=os.getenv("MISTRAL_API_KEY"),
         model=model_name,
         temperature=config["temperature"],
         timeout=30
@@ -146,7 +156,7 @@ if __name__ == "__main__":
     chunks = load_processed_chunks()
     
     # Define output file path
-    output_file = f"training_data_{config_name}.jsonl"
+    output_file = f"training_data.jsonl"
     
     # Clear the file if it exists (optional - remove if you want to append to existing)
     # if os.path.exists(output_file):
