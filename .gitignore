@@ -4,3 +4,4 @@ __pycache__/
 training_data.jsonl
 data/*.pdf
 .DS_Store
+processed_chunks.pkl
