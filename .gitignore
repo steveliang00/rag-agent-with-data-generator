@@ -2,3 +2,5 @@
 chroma/
 __pycache__/
 training_data.jsonl
+data/*.pdf
+.DS_Store
