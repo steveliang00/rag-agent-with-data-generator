@@ -54,7 +54,7 @@ def initialize_generator(config_name: str = DEFAULT_CONFIG):
     llm = ChatMistralAI(
         api_key=os.getenv("MISTRAL_API_KEY"),
         model=model_name,
-        temperature=config["temperature"],
+        temperature=1,
         timeout=30
     )
     
@@ -165,26 +165,28 @@ if __name__ == "__main__":
     print(f"Generating training data and writing to {output_file}...")
     
     # Process chunks and write incrementally
-    for i, chunk in enumerate(chunks):
-        if i == 3:
-            break  
-        try:
-            print(f"Processing chunk {i+1}/{len(chunks)}...")
-            
-            # Generate training prompt
-            training_prompt = generate_training_prompt(chunk, llm, prompt, parser)
-            
-            # Format the prompt
-            formatted_data = format_prompt(training_prompt, system_prompt)
-            
-            # Write to JSONL file immediately
-            write_single_jsonl_object(output_file, formatted_data, 'a')
-            
-            print(f"✓ Chunk {i+1} processed and written")
-            
- 
-        except Exception as e:
-            print(f"✗ Error processing chunk {i+1}: {e}")
-            break
+    for iter in range(10):
+        for i, chunk in enumerate(chunks):
+            # if i == 1:
+            #     break  
+            try:
+                print(f"Processing chunk {i+1}/{len(chunks)}...")
+                
+                # Generate training prompt
+                training_prompt = generate_training_prompt(chunk, llm, prompt, parser)
+                
+                # Format the prompt
+                formatted_data = format_prompt(training_prompt, system_prompt)
+                
+                # Write to JSONL file immediately
+                write_single_jsonl_object(output_file, formatted_data, 'a')
+                
+                print(f"✓ Chunk {i+1} processed and written")
+                
+    
+            except Exception as e:
+                print(f"✗ Error processing chunk {i+1}: {e}")
+                break
+        print(f"Iteration {iter+1} complete")
     
     print(f"Training data generation complete! Output written to {output_file}")
