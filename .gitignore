@@ -5,3 +5,4 @@ training_data.jsonl
 data/*.pdf
 .DS_Store
 processed_chunks.pkl
+src/prompts_config.py
