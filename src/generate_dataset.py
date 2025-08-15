@@ -156,7 +156,7 @@ if __name__ == "__main__":
     chunks = load_processed_chunks()
     
     # Define output file path
-    output_file = f"training_data.jsonl"
+    output_file = f"training_data/training_data.jsonl"
     
     # Clear the file if it exists (optional - remove if you want to append to existing)
     # if os.path.exists(output_file):
