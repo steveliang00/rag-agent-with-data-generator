@@ -6,3 +6,4 @@ data/*.pdf
 .DS_Store
 processed_chunks.pkl
 src/prompts_config.py
+test_document_loading.ipynb
