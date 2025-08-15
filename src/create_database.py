@@ -31,6 +31,10 @@ class DocumentManager:
         self.DATA_PATH = "./data"
 
     def load_docs(self) -> List[Document]: 
+        """
+        Loads all PDF files from the DATA_PATH directory and returns a list of Document objects.
+        """
+
         loader = PyPDFDirectoryLoader(
             path = self.DATA_PATH,
             glob = "*.pdf"
@@ -42,6 +46,9 @@ class DocumentManager:
         return docs
 
     def split_text(self, docs: List[Document]) -> List[Document]:
+        """
+        Splits the documents into chunks
+        """
         splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
             tokenizer=self.tokenizer,
             chunk_size = 512,
@@ -54,6 +61,9 @@ class DocumentManager:
         return chunks
 
     def embed_and_store_docs(self,chunks: List[Document]):
+        """
+        Embeds document chunks and stores them in the Chroma database.
+        """
         # Clear out the database first.
         if os.path.exists(self.CHROMA_PATH):
             shutil.rmtree(self.CHROMA_PATH)
