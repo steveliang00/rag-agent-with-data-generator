@@ -51,7 +51,7 @@ class DocumentManager:
         """
         splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
             tokenizer=self.tokenizer,
-            chunk_size = 512,
+            chunk_size = 700,
             chunk_overlap = 50,
             add_start_index = True
         )
