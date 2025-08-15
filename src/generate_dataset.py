@@ -50,7 +50,7 @@ def initialize_generator(config_name: str = DEFAULT_CONFIG):
     # )
 
     # MistralAI option
-    model_name = os.getenv("MISTRAL_MODEL", "mistral-small-latest")
+    model_name = os.getenv("MISTRAL_MODEL", "mistral-medium-latest")
     llm = ChatMistralAI(
         api_key=os.getenv("MISTRAL_API_KEY"),
         model=model_name,
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     print(f"Generating training data and writing to {output_file}...")
     
     # Process chunks and write incrementally
-    for iter in range(10):
+    for iter in range(1):
         for i, chunk in enumerate(chunks):
             # if i == 1:
             #     break  
@@ -186,7 +186,6 @@ if __name__ == "__main__":
     
             except Exception as e:
                 print(f"✗ Error processing chunk {i+1}: {e}")
-                break
         print(f"Iteration {iter+1} complete")
     
     print(f"Training data generation complete! Output written to {output_file}")
