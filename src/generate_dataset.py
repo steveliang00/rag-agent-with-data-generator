@@ -1,5 +1,6 @@
 import os
 import json
+import pickle
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
@@ -112,6 +113,28 @@ def format_prompt(content: TrainingPrompt):
 
 
 
+def load_processed_chunks(chunks_file: str = "processed_chunks.pkl"):
+    """
+    Load pre-processed chunks from file
+    
+    Args:
+        chunks_file: Path to the pickled chunks file
+        
+    Returns:
+        List[Document]: The loaded chunks
+    """
+    if not os.path.exists(chunks_file):
+        raise FileNotFoundError(
+            f"Chunks file '{chunks_file}' not found. "
+            f"Please run 'python preprocess_chunks.py' first to generate the chunks file."
+        )
+    
+    print(f"Loading pre-processed chunks from {chunks_file}...")
+    with open(chunks_file, 'rb') as f:
+        chunks = pickle.load(f)
+    print(f"Loaded {len(chunks)} chunks")
+    return chunks
+
 def write_single_jsonl_object(jsonl_file_path: str, obj: dict, mode: str = 'a'):
     """
     Writes a single JSON object to a JSONL file
@@ -127,9 +150,8 @@ def write_single_jsonl_object(jsonl_file_path: str, obj: dict, mode: str = 'a'):
 
 
 if __name__ == "__main__":
-    document_manager = DocumentManager()
-    docs = document_manager.load_docs()
-    chunks = document_manager.split_text(docs)
+    # Load pre-processed chunks instead of processing PDF every time
+    chunks = load_processed_chunks()
     
     # Define output file path
     output_file = "training_data.jsonl"
