@@ -1,8 +1,10 @@
 .env
 chroma/*
+!chroma/.gitkeep
 __pycache__/
 training_data.jsonl
-data/*.pdf
+data/*
+!data/.gitkeep
 .DS_Store
 processed_chunks.pkl
 src/prompts_config.py
