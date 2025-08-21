@@ -66,11 +66,20 @@ class DocumentManager:
     def embed_and_store_docs(self, chunks: List[Document]):
         """
         Embeds document chunks and stores them in the Chroma database.
+        Clears existing collection to avoid duplicates when processing multiple files.
         """
         try:
-            # Clear out the database first if it exists
+            # Clear existing ChromaDB contents to avoid duplicates
             if os.path.exists(self.CHROMA_PATH):
-                shutil.rmtree(self.CHROMA_PATH)
+                for item in os.listdir(self.CHROMA_PATH):
+                    if item == '.gitkeep':
+                        continue  # Preserve .gitkeep file
+                    item_path = os.path.join(self.CHROMA_PATH, item)
+                    if os.path.isfile(item_path):
+                        os.remove(item_path)
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+                print("Cleared existing ChromaDB contents")
             
             # Ensure the parent directory exists and is writable
             os.makedirs(self.CHROMA_PATH, exist_ok=True)
