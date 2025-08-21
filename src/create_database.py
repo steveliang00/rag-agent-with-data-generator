@@ -69,24 +69,27 @@ class DocumentManager:
         Clears existing collection to avoid duplicates when processing multiple files.
         """
         try:
-            # Clear existing ChromaDB contents to avoid duplicates
-            if os.path.exists(self.CHROMA_PATH):
-                for item in os.listdir(self.CHROMA_PATH):
-                    if item == '.gitkeep':
-                        continue  # Preserve .gitkeep file
-                    item_path = os.path.join(self.CHROMA_PATH, item)
-                    if os.path.isfile(item_path):
-                        os.remove(item_path)
-                    elif os.path.isdir(item_path):
-                        shutil.rmtree(item_path)
-                print("Cleared existing ChromaDB contents")
-            
             # Ensure the parent directory exists and is writable
             os.makedirs(self.CHROMA_PATH, exist_ok=True)
             
             # Check if directory is writable
             if not os.access(self.CHROMA_PATH, os.W_OK):
                 raise PermissionError(f"Cannot write to {self.CHROMA_PATH}. Check directory permissions.")
+            
+            # Clear existing collection using ChromaDB's methods (safer than file deletion)
+            try:
+                # Try to load existing collection and delete it
+                existing_db = Chroma(
+                    collection_name="the_documents",
+                    persist_directory=self.CHROMA_PATH,
+                    embedding_function=self.embedding
+                )
+                # Delete the collection if it exists
+                existing_db.delete_collection()
+                print("Cleared existing collection")
+            except Exception:
+                # Collection doesn't exist yet, or other error - continue
+                pass
                 
             print("Starting embedding process...")
             Chroma.from_documents(
