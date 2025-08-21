@@ -1,5 +1,11 @@
 import os
+import sys
 from typing import List, Literal
+
+# Fix for SQLite version compatibility with ChromaDB
+__import__('pysqlite3')
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.messages import AIMessage, HumanMessage

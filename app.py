@@ -1,7 +1,13 @@
 import streamlit as st
 import os
+import sys
 import glob
 import shutil
+
+# Fix for SQLite version compatibility with ChromaDB
+__import__('pysqlite3')
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from src.agent import Agent
 from src.create_database import DocumentManager
 

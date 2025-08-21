@@ -6,6 +6,10 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 from typing import List, Optional
 
+# Fix for SQLite version compatibility with ChromaDB
+__import__('pysqlite3')
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 # Suppress PyPDF warnings for cleaner output
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="pypdf")
 warnings.filterwarnings("ignore", message=".*wrong pointing object.*")
