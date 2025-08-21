@@ -7,8 +7,8 @@ from langchain_openai import ChatOpenAI
 from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
-from state import AgentState
-from create_database import DocumentManager
+from .state import AgentState
+from .create_database import DocumentManager
 
 # Load environment variables
 load_dotenv()
