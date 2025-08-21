@@ -1,7 +1,9 @@
 # RAG Agent & Training Dataset Generator
-- A simple RAG chatbot to answer questions about your documents
+- A simple RAG chatbot to answer questions about your pdf documents
 - A script to generate training data for fine-tuning from your documents
 
+Streamlit app of chatbot here:
+https://the-pdf-rag-chatbot.streamlit.app/
 ## Instructions
 ### RAG Agent
 1. Add pdf documents to `data` folder
