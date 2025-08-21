@@ -45,6 +45,9 @@ def clear_data_folder():
 if 'app_initialized' not in st.session_state:
     clear_data_folder()
     st.session_state.app_initialized = True
+    # Also clear the successful uploads tracking since we're starting fresh
+
+    st.session_state.successful_uploads = []
 
 # Initialize session state
 if 'agent' not in st.session_state:
@@ -84,12 +87,25 @@ if uploaded_file is not None:
             
             # Mark file as processed
             st.session_state.processed_files.add(file_name)
-            st.success(f"File {file_name} has been uploaded and processed successfully!")
+            st.session_state.successful_uploads.append(file_name)
             
         except Exception as e:
             st.error(f"Error processing file: {e}")
     else:
         st.info(f"File {file_name} has already been processed.")
+
+# Display all successful uploads
+if st.session_state.successful_uploads:
+    st.success("📁 **Successfully Processed Files:**")
+    for i, filename in enumerate(st.session_state.successful_uploads, 1):
+        st.success(f"✅ {i}. {filename}")
+else:
+    if uploaded_file is None:
+        st.info("👆 Upload a PDF file above to get started!")
+
+# Add a divider between upload and chat sections
+if st.session_state.successful_uploads:
+    st.divider()
 
 if mistral_api_key:
     # Initialize the agent if not already done
