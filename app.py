@@ -2,11 +2,9 @@ import streamlit as st
 import os
 import glob
 import shutil
-from dotenv import load_dotenv
 from src.agent import Agent
 from src.create_database import DocumentManager
 
-load_dotenv()
 
 def clear_data_folder():
     """Clear all PDF files from the data folder and ChromaDB on app startup"""
