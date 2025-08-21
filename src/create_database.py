@@ -55,8 +55,8 @@ class DocumentManager:
         Splits the documents into chunks using character-based splitting (faster than tokenizer-based)
         """
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,  # Slightly larger since we're not using token-based counting
-            chunk_overlap=100,
+            chunk_size=1500,  # Slightly larger since we're not using token-based counting
+            chunk_overlap=200,
             length_function=len,
             add_start_index=True,
             separators=["\n\n", "\n", " ", ""]  # Split by paragraphs, lines, then words

@@ -122,7 +122,7 @@ Document Text:
         
         # Load the vector store and perform similarity search
         db = doc_manager.load_vector_store()
-        results = db.similarity_search(user_input, k=3)
+        results = db.similarity_search(user_input, k=4)
         return results
     
     def _is_chroma_populated(self, doc_manager: DocumentManager) -> bool:
