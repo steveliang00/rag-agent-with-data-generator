@@ -379,6 +379,7 @@ sqlalchemy==2.0.43
     # via
     #   langchain
     #   langchain-community
+sqlite3
 streamlit==1.48.1
     # via -r requirements.in
 sympy==1.14.0
