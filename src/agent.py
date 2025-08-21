@@ -4,7 +4,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
-from langchain_mistral import ChatMistralAI
+from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 from state import AgentState
@@ -56,7 +56,16 @@ class Agent:
     def bot_node(self, state: AgentState):
         
         messages = state["messages"] # first message initialized in run_agent
-        documents = self._retrieve_docs(messages[-1].content)
+        
+        # Only retrieve documents if not already cached in state
+        if not state.get("documents"):
+            documents = self._retrieve_docs(messages[-1].content)
+            # Store documents in state for future use
+            state["documents"] = documents
+        else:
+            # Use cached documents from previous calls
+            documents = state["documents"]
+            
         context = "\n\n".join([doc.page_content for doc in documents])
 
         # Create a prompt template that includes the context
@@ -82,7 +91,12 @@ Document Text:
             "document_text": context,
             "messages": messages
         })
-        return {"messages": [response]}
+        
+        # Return both the response and documents (to persist documents in state)
+        return {
+            "messages": [response],
+            "documents": documents
+        }
     
 
     def _retrieve_docs(self, user_input: str):
@@ -126,14 +140,15 @@ Document Text:
 
 
     def run_agent(self, user_input: str, thread_id: str = "default"):
-
-
-        initial_state  = {
-            "messages" : [HumanMessage(content=user_input)]
+        """Run the agent with memory persistence via LangGraph checkpointer"""
+        
+        # Create input with just the new message - LangGraph will handle adding it to conversation history
+        input_data = {
+            "messages": [HumanMessage(content=user_input)]
         }
         config = {"configurable": {"thread_id": thread_id}}
 
-        # Invoke the agent, returns graph state
-        response = self.app.invoke(initial_state, config=config)
+        # Invoke the agent - LangGraph memory will maintain conversation context
+        response = self.app.invoke(input_data, config=config)
         return response["messages"][-1].content
 
