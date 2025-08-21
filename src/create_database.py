@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", message=".*CryptographyDeprecationWarning.*")
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
-from transformers import AutoTokenizer
+# from transformers import AutoTokenizer  # Commented out for faster loading
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -25,8 +25,6 @@ class DocumentManager:
         model_name="all-MiniLM-L6-v2",
         encode_kwargs={'normalize_embeddings': True}
     )
-        
-        self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         
         # Use absolute paths to avoid working directory issues
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,13 +48,14 @@ class DocumentManager:
 
     def split_text(self, docs: List[Document]) -> List[Document]:
         """
-        Splits the documents into chunks
+        Splits the documents into chunks using character-based splitting (faster than tokenizer-based)
         """
-        splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
-            tokenizer=self.tokenizer,
-            chunk_size = 700,
-            chunk_overlap = 50,
-            add_start_index = True
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,  # Slightly larger since we're not using token-based counting
+            chunk_overlap=100,
+            length_function=len,
+            add_start_index=True,
+            separators=["\n\n", "\n", " ", ""]  # Split by paragraphs, lines, then words
         )
         chunks = splitter.split_documents(docs)
         
