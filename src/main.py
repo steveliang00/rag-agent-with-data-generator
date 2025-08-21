@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", message=".*wrong pointing object.*")
 if __name__ == "__main__":
     from agent import Agent
     
-    agent = Agent()
+    agent = Agent(api_provider="mistral")
     print("Grammar Guide Bot started! Ask me anything about the grammar guide. \nType 'quit', 'exit', or 'q' to stop.")
     
     while True:

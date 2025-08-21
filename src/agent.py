@@ -1,9 +1,10 @@
 import os
-from typing import List
+from typing import List, Literal
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
+from langchain_mistral import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 from state import AgentState
@@ -15,19 +16,28 @@ load_dotenv()
 
 openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
 base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-model_name = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
-
+openrouter_model_name = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
+mistral_model_name = os.getenv("MISTRAL_MODEL", "mistral-small-latest")
 class Agent:
     """Q&A Agent to answer questions about provided documents"""
     
-    def __init__(self):
-        self.llm = ChatOpenAI(
-            api_key=openrouter_api_key,
-            base_url=base_url,
-            model=model_name,
-            temperature=0.5,
-            timeout=30
-        )
+    def __init__(self, api_provider:Literal["mistral", "openrouter"] = "mistral"):
+        
+        if api_provider == "mistral":
+            self.llm = ChatMistralAI(
+                api_key=os.getenv("MISTRAL_API_KEY"),
+                model=mistral_model_name,
+                temperature=0.5,
+                timeout=30
+            )
+        elif api_provider == "openrouter":
+            self.llm = ChatOpenAI(
+                api_key=openrouter_api_key,
+                base_url=base_url,
+                model=openrouter_model_name,
+                temperature=0.5,
+                timeout=30
+            )
 
         # Create the graph
         self.app = self._create_graph()
