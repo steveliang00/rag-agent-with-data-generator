@@ -27,8 +27,11 @@ class DocumentManager:
     )
         
         self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-        self.CHROMA_PATH = "./chroma"
-        self.DATA_PATH = "./data"
+        
+        # Use absolute paths to avoid working directory issues
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.CHROMA_PATH = os.path.join(base_dir, "chroma")
+        self.DATA_PATH = os.path.join(base_dir, "data")
 
     def load_docs(self) -> List[Document]: 
         """
@@ -60,22 +63,34 @@ class DocumentManager:
         print(f"split {len(docs)} documents into {len(chunks)} chunks")
         return chunks
 
-    def embed_and_store_docs(self,chunks: List[Document]):
+    def embed_and_store_docs(self, chunks: List[Document]):
         """
         Embeds document chunks and stores them in the Chroma database.
         """
-        # Clear out the database first.
-        if os.path.exists(self.CHROMA_PATH):
-            shutil.rmtree(self.CHROMA_PATH)
+        try:
+            # Clear out the database first if it exists
+            if os.path.exists(self.CHROMA_PATH):
+                shutil.rmtree(self.CHROMA_PATH)
             
-        print("Starting embedding process...")
-        Chroma.from_documents(
-            documents = chunks,
-            collection_name = "the_documents",
-            persist_directory = self.CHROMA_PATH,
-            embedding = self.embedding        
+            # Ensure the parent directory exists and is writable
+            os.makedirs(self.CHROMA_PATH, exist_ok=True)
+            
+            # Check if directory is writable
+            if not os.access(self.CHROMA_PATH, os.W_OK):
+                raise PermissionError(f"Cannot write to {self.CHROMA_PATH}. Check directory permissions.")
+                
+            print("Starting embedding process...")
+            Chroma.from_documents(
+                documents=chunks,
+                collection_name="the_documents",
+                persist_directory=self.CHROMA_PATH,
+                embedding=self.embedding        
             )
-        print(f"Saved {len(chunks)} chunks to {self.CHROMA_PATH}.")
+            print(f"Saved {len(chunks)} chunks to {self.CHROMA_PATH}.")
+            
+        except Exception as e:
+            print(f"Error in embed_and_store_docs: {e}")
+            raise
 
     def load_vector_store(self):
         try:
